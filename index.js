@@ -2,18 +2,25 @@ const http = require('http');
 const port = process.env.PORT || 3000;
 
 const server = http.createServer((req, res) => {
+  // Check if the user is visiting the /test endpoint
+  if (req.url === '/test') {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    
+    const responseData = {
+      message: "Checking environment variables",
+      PORT_RECEIVED: process.env.PORT || port,
+      MY_TEST_SECRET: process.env.MY_TEST_SECRET || "Not Set",
+      NODE_ENV: process.env.NODE_ENV || "development"
+    };
+
+    return res.end(JSON.stringify(responseData));
+  }
+
+  // Default fallback route (homepage)
   res.statusCode = 200;
-  const msg = 'Hello Node!\n'
-  res.end(msg);
-});
-// Add this snippet inside index.js to print out custom env vars
-app.get('/test', (req, res) => {
-  res.json({
-    message: "Checking environment variables",
-    PORT_RECEIVED: process.env.PORT,
-    MY_TEST_SECRET: process.env.MY_TEST_SECRET || "Not Set",
-    NODE_ENV: process.env.NODE_ENV || "development"
-  });
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('Hello Node!\n');
 });
 
 server.listen(port, () => {
